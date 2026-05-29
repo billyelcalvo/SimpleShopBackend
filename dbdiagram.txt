@@ -1,0 +1,62 @@
+Table users {
+  id varchar [primary key]
+  name varchar 
+  email varchar [null ,unique]
+  created_at timestamp 
+}
+
+Table customers{
+  id varchar [primary key]
+  userId varchar
+  phone varchar
+}
+Table addresses{
+  id varchar
+  country varchar
+  city varchar
+  address varchar
+  customerId varchar
+}
+Table products{
+  id varchar [primary key]
+  name varchar
+  description varchar [null]
+  stock int
+}
+Table comments{
+  id varchar
+  comment varchar
+  productId varchar
+  customerId varchar
+  rate float
+}
+Table orders{
+  id varchar
+  customerId varchar
+  status purchaseStatus
+  productId varchar
+  quantity int
+}
+
+Table stripe_customers {
+  id varchar
+  userId varchar
+  stripeCustomerId varchar  //← el ID que Stripe te da
+}
+
+Table payments {
+  id varchar
+  orderId varchar
+  stripePaymentId   varchar //← para rastrear el pago en Stripe
+  amount float
+  currency varchar
+  status varchar           //← succeeded, failed, pending
+  createdAt timestamp
+}
+
+Ref : users.id - customers.userId 
+Ref : customers.id > addresses.customerId
+Ref : comments.customerId - customers.id
+Ref : comments.productId < products.id
+Ref : stripe_customers.userId - users.id
+Ref : payments.orderId - orders.id

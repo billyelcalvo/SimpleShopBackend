@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum PaymentStatus {
+  SUCCEEDED
+  FAILED
+  PENDING
+}
+
+model User {
+  id             String          @id @default(uuid())
+  name           String
+  email          String?         @unique
+  createdAt      DateTime        @default(now())
+  customer       Customer?
+  stripeCustomer StripeCustomer?
+}
+
+model Customer {
+  id        String     @id @default(uuid())
+  phone     String?
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id])
+  addresses Address[]
+  orders    Order[]
+  comments  Comment[]
+}
+
+model Address {
+  id         String   @id @default(uuid())
+  country    String
+  city       String
+  address    String
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+}
+
+model Product {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  stock       Int
+  comments    Comment[]
+}
+
+model Comment {
+  id         String   @id @default(uuid())
+  comment    String
+  rate       Float
+  productId  String
+  customerId String
+  product    Product  @relation(fields: [productId], references: [id])
+  customer   Customer @relation(fields: [customerId], references: [id])
+}
+
+model Order {
+  id         String        @id @default(uuid())
+  status     OrderStatus   @default(PENDING)
+  quantity   Int
+  customerId String
+  productId  String
+  customer   Customer      @relation(fields: [customerId], references: [id])
+  payment    Payment?
+}
+
+model StripeCustomer {
+  id               String @id @default(uuid())
+  stripeCustomerId String
+  userId           String @unique
+  user             User   @relation(fields: [userId], references: [id])
+}
+
+model Payment {
+  id              String        @id @default(uuid())
+  amount          Int
+  currency        String
+  status          PaymentStatus @default(PENDING)
+  stripePaymentId String
+  createdAt       DateTime      @default(now())
+  orderId         String        @unique
+  order           Order         @relation(fields: [orderId], references: [id])
+}
