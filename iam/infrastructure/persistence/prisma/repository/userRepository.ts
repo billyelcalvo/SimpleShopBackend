@@ -17,12 +17,15 @@ export class userRepository {
       }
 
     });
-
     return new User(user.name, password, user.email);
   }
   static async updateUser(user: UserInterface) {
     
   }
-  static async getById(id: string) {}
-  static async getByEmail(email: string) {}
+  static async getById(id: string) {
+    return await this.client.user.findUnique({where : { id : id} } );
+  }
+  static async getByEmail(email: string) {
+    return await this.client.user.findUnique({where : {email : email}});
+  }
 }
