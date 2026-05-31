@@ -1,17 +1,31 @@
-import {UserInterface} from '../../../../domain/schemas/user.schema'
-import {User} from '../../../../domain/entities/user'
-import {hashService} from '../../bcrypt/service/hashService'
+import { UserInterface } from "../../../../domain/schemas/user.schema";
+import { User } from "../../../../domain/entities/user";
+import { hashService } from "../../bcrypt/service/hashService";
+import { prismaService } from "../../prisma/service/prismaService";
 
-export  async function createUser(user : UserInterface){
+export class userRepository {
+
+  private static client = prismaService.getClient();
+
+  static async createUser(user: UserInterface) {
     const password = await hashService.hash(user.password);
+
+    await this.client.user.create({
+      data: {
+        name : user.name,
+        password : password
+      }
+
+    });
     return new User(user.name, password, user.email);
-}
-export function updateUser(user : UserInterface){
-
-}
-export function getById(id : string){
-
-}
-export function getByEmail(email : string){
-
+  }
+  static async updateUser(user: UserInterface) {
+    
+  }
+  static async getById(id: string) {
+    return await this.client.user.findUnique({where : { id : id} } );
+  }
+  static async getByEmail(email: string) {
+    return await this.client.user.findUnique({where : {email : email}});
+  }
 }
