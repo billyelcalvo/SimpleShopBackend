@@ -1,6 +1,7 @@
 import {z} from 'zod'
 export const UserSchema = z.object(
     {
+        id : z.string().optional(),
         name : z.string(),
         password: z.string()
             .min(8, "Password must be at least 8 characters")
