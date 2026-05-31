@@ -24,7 +24,6 @@ export class userRepository {
     return await this.client.user.update({ where : {id : user.id}, data : {
       name : user.name,
       ...( user.email && {email : user.email})
-
     } });
   }
   static async getById(id: string) {
