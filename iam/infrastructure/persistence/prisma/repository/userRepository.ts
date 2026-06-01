@@ -13,6 +13,7 @@ export class userRepository {
     await this.client.user.create({
       data: {
         name : user.name,
+        ...(user.email && {email : user.email}),
         password : password
       }
 
@@ -20,7 +21,10 @@ export class userRepository {
     return new User(user.name, password, user.email);
   }
   static async updateUser(user: UserInterface) {
-    
+    return await this.client.user.update({ where : {id : user.id}, data : {
+      name : user.name,
+      ...( user.email && {email : user.email})
+    } });
   }
   static async getById(id: string) {
     return await this.client.user.findUnique({where : { id : id} } );
