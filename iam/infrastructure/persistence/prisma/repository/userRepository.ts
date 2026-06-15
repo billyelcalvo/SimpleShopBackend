@@ -10,15 +10,14 @@ export class userRepository {
   static async createUser(user: UserInterface) {
     const password = await hashService.hash(user.password);
 
-    await this.client.user.create({
+    const data = await this.client.user.create({
       data: {
         name : user.name,
         ...(user.email && {email : user.email}),
         password : password
       }
-
     });
-    return new User(user.name, password, user.email);
+    return new User(data.name, data.password, data.email ??  "", data.id);
   }
   static async updateUser(user: UserInterface) {
     return await this.client.user.update({ where : {id : user.id}, data : {
@@ -31,5 +30,8 @@ export class userRepository {
   }
   static async getByEmail(email: string) {
     return await this.client.user.findUnique({where : {email : email}});
+  }
+  static async getAll(){
+    return await this.client.user.findMany();
   }
 }
